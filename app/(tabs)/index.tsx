@@ -26,6 +26,7 @@ export default function App() {
         <Text style={styles.azariasTitle}>Azarias'</Text>
         <Text style={styles.title}>Personal Portfolio</Text>
         <Text style={styles.subtitle}>Welcome to my personal portfolio.</Text>
+        <Link style={styles.pageLink} push href= '/dogdata'>GO TO DOG DATA PAGE</Link>
         
       </View>
     </View>
@@ -54,7 +55,7 @@ function Example() {
   
     return (
       <div>
-        <h1>{data.name}</h1>
+        <h1>{data.url}</h1>
         <p>{data.description}</p>
         <strong>👀 {data.subscribers_count}</strong>{' '}
         <strong>✨ {data.stargazers_count}</strong>{' '}
