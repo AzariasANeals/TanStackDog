@@ -26,6 +26,7 @@ const queryClient = new QueryClient()
 const dogQuery = new QueryClient()
 const detailedDog = new QueryClient()
 const dogFacts = new QueryClient()
+const dogGroups = new QueryClient()
 export default function ContactPage() {
 	return (
 		<View style={styles.container}>
@@ -47,6 +48,9 @@ export default function ContactPage() {
                 <DogFacts />
             </QueryClientProvider>
 
+            <QueryClientProvider client={dogGroups}>
+                <DogGroups />
+            </QueryClientProvider>
             <Link style={styles.pageLink} push href="/">
           <ThemedText style={styles.pageLink} type="link">Go to home screen!</ThemedText>
         </Link>
@@ -54,6 +58,37 @@ export default function ContactPage() {
 		</View>
 	);
 }
+
+function DogGroups(){
+  const { isPending, error, data, isFetching, isSuccess } = useQuery({
+    queryKey: ['dogGroups'],
+    queryFn: () =>
+      axios
+        .get('https://dogapi.dog/api/v2/groups')
+        .then((res) => res.data),
+  })
+  
+  if (isPending) return 'Loading...'
+  if (error) return 'An error has occurred: ' + error.message
+  
+  if (isSuccess) return(
+    <div>
+      <h1>Dog Groups to check out</h1>
+      <p>- {data.data[0].attributes.name}</p>
+      <p>- {data.data[1].attributes.name}</p>
+      <p>- {data.data[2].attributes.name}</p>
+      <p>- {data.data[3].attributes.name}</p>
+      <p>- {data.data[4].attributes.name}</p>
+      <p>- {data.data[5].attributes.name}</p>
+      <p>- {data.data[6].attributes.name}</p>
+      <p>- {data.data[7].attributes.name}</p>
+      <p>- {data.data[8].attributes.name}</p>
+
+      <p style={styles.small}> Data Fetching: SUCCESS!</p>
+      <div>{isFetching ? 'Updating...' : ''}</div>
+    </div>
+  )
+  }
 
 function DogFacts(){
 const { isPending, error, data, isFetching, isSuccess } = useQuery({
