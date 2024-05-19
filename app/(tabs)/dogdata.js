@@ -20,51 +20,33 @@ https://dogapi.dog/api/v2/breeds
 https://dogapi.dog/api/v2/breeds/{68f47c5a-5115-47cd-9849-e45d3c378f12}
         <p>{data.type}</p>
 
-              <div>
-        <h1>{data.data[0].attributes.name}</h1>
-        <h1>{data.data[1].attributes.name}</h1>
-        <h1>{data.data[2].attributes.name}</h1>
-        <div>{isFetching ? 'Updating...' : ''}</div>
-      </div>
-
-          function addTask(){
-      setTaskName(tname);
-      setId(tid + 1);
-      updatedValue={
-        id: tid,
-        title: tname,
-        completed: false
-      };
-      setTask(updatedValue);
-      const newList = () => ([...taskList, updatedValue]);
-      setTaskList(newList);
-      console.log(taskList);
-    }
 */
 
 const queryClient = new QueryClient()
 const dogQuery = new QueryClient()
+const detailedDog = new QueryClient()
+const dogFacts = new QueryClient()
 export default function ContactPage() {
-  const initialBreed =[
-    {
-        id: "",
-        name:""
-    }
-  ]; 
-  const[breed, setBreed]= useState({});
-
-  // Constant for list of tasks
-  const[BreedList, setBreedList] = useState([]);
 	return (
 		<View style={styles.container}>
         <ScrollView>
 			<Text style={styles.title}>Dog Data Page</Text>
             <QueryClientProvider client={queryClient}>
-            <Example />
+                <Example />
             </QueryClientProvider>
+
             <QueryClientProvider client={dogQuery}>
-            <Dog />
+                <Dog />
             </QueryClientProvider>
+
+            <QueryClientProvider client={detailedDog}>
+                <DetailedDog />
+            </QueryClientProvider>
+            
+            <QueryClientProvider client={dogFacts}>
+                <DogFacts />
+            </QueryClientProvider>
+
             <Link style={styles.pageLink} push href="/">
           <ThemedText style={styles.pageLink} type="link">Go to home screen!</ThemedText>
         </Link>
@@ -73,9 +55,60 @@ export default function ContactPage() {
 	);
 }
 
+function DogFacts(){
+const { isPending, error, data, isFetching, isSuccess } = useQuery({
+  queryKey: ['dogFacts'],
+  queryFn: () =>
+    axios
+      .get('https://dogapi.dog/api/v2/facts')
+      .then((res) => res.data),
+})
+
+if (isPending) return 'Loading...'
+if (error) return 'An error has occurred: ' + error.message
+
+if (isSuccess) return(
+  <div>
+    <h1>Dog Facts! Did you know?</h1>
+    <p>{data.data[0].attributes.body}</p>
+
+    <p style={styles.small}> Data Fetching: SUCCESS!</p>
+    <div>{isFetching ? 'Updating...' : ''}</div>
+  </div>
+)
+}
+
+function DetailedDog() {
+  const { isPending, error, data, isFetching, isSuccess } = useQuery({
+    queryKey: ['DetailedDog'],
+    queryFn: () =>
+      axios
+        .get('https://dogapi.dog/api/v2/breeds/68f47c5a-5115-47cd-9849-e45d3c378f12')
+        .then((res) => res.data),
+  })
+
+  if (isPending) return 'Loading...'
+  if (error) return 'An error has occurred: ' + error.message
+
+  if (isSuccess) return(
+    <div>
+      <h1>Specific Dog Breed</h1>
+      <p>Name: {data.data.attributes.name}</p>
+      <p>Brief Description: {data.data.attributes.description}</p>
+      <p>Maximum Life Expectancy: {data.data.attributes.life.max} Years.</p>
+      <p>Minimum Life Expectancy: {data.data.attributes.life.min} Years.</p>
+      <p>Male Maximum Weight: {data.data.attributes.male_weight.max} pounds.</p>
+      <p>Male Minimum Weight: {data.data.attributes.male_weight.min} pounds.</p>
+      <p>Female Maximum Weight: {data.data.attributes.female_weight.max} pounds.</p>
+      <p>Female Minimum Weight: {data.data.attributes.name} pounds.</p>
+
+      <p style={styles.small}> Data Fetching: SUCCESS!</p>
+      <div>{isFetching ? 'Updating...' : ''}</div>
+    </div>
+  )
+}
 function Example() {
-    const queryClient = useQueryClient()
-    const { isPending, error, data, isFetching } = useQuery({
+    const { isPending, error, data, isFetching, isSuccess } = useQuery({
       queryKey: ['repoData'],
       queryFn: () =>
         axios
@@ -84,22 +117,28 @@ function Example() {
     })
   
     if (isPending) return 'Loading...'
-  
     if (error) return 'An error has occurred: ' + error.message
-    // <ul>{query.data?.map((todo) => <li key={todo.id}>{todo.title}</li>)}</ul>
-    return (
+  
+    if (isSuccess) return(
       <div>
-        <ul>{data?.map((data) => {
-          <li key={data.id}>{data.attributes.name}</li>
-          
-        }
-        )}</ul>
+        <h1>LIST OF DOG TYPES</h1>
+        <p>- {data.data[0].attributes.name}</p>
+        <p>- {data.data[1].attributes.name}</p>
+        <p>- {data.data[2].attributes.name}</p>
+        <p>- {data.data[3].attributes.name}</p>
+        <p>- {data.data[4].attributes.name}</p>
+        <p>- {data.data[5].attributes.name}</p>
+        <p>- {data.data[6].attributes.name}</p>
+        <p>- {data.data[7].attributes.name}</p>
+        <p>- {data.data[8].attributes.name}</p>
+        <p>- {data.data[9].attributes.name}</p>
+        <p style={styles.small}> Data Fetching: SUCCESS!</p>
         <div>{isFetching ? 'Updating...' : ''}</div>
       </div>
     )
   }
   function Dog() {
-    const { isPending, error, data, isFetching } = useQuery({
+    const { isPending, error, data, isFetching, } = useQuery({
       queryKey: ['dogData'],
       queryFn: () =>
         axios
@@ -108,12 +147,11 @@ function Example() {
     })
   
     if (isPending) return 'Loading...'
-  
     if (error) return 'An error has occurred: ' + error.message
   
     return (
       <div>
-        <h1>DOG DATA</h1>
+        <h1>Random Dog Image</h1>
         <p>{data.url}</p>
         <img src={data.url} width = '500' height = '500'/>
         <div>{isFetching ? 'Updating...' : ''}</div>
@@ -161,8 +199,9 @@ const styles = StyleSheet.create({
       fontSize: 25,
       color: "#38434D",
       },
-    github: {
-      fontSize: 25,
+    small: {
+      fontSize: 15,
+      fontWeight: 'bold',
       color: "black",
       },
     subtitle: {
